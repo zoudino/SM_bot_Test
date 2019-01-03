@@ -17,9 +17,12 @@ from apiclient.discovery import build, build_from_document
 from flask import Flask, render_template, request, json, make_response
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
-from connect_dialogflow.dialog_config import detect_intent_texts
+from .dialog_config import detect_intent_texts
 import dialogflow
 import os
+import sys
+sys.path.insert(0, 'connect_dialogflow')
+import dialog_config
 
 
 app = Flask(__name__)
