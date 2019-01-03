@@ -17,7 +17,6 @@ from apiclient.discovery import build, build_from_document
 from flask import Flask, render_template, request, json, make_response
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
-from .dialog_config import detect_intent_texts
 import dialogflow
 import os
 import sys
