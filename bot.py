@@ -17,6 +17,9 @@ from apiclient.discovery import build, build_from_document
 from flask import Flask, render_template, request, json, make_response
 from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
+from connect_dialogflow import dialog_config
+import dialogflow
+
 
 app = Flask(__name__)
 
@@ -49,9 +52,10 @@ def home_post():
     elif event_data['type']  == 'ADDED_TO_SPACE' and event_data['space']['type'] == 'DM':
         resp = { 'text': ('Thanks for adding me to a DM, {}!'
             .format(event_data['user']['displayName'])) }
-
+    # todo - making modification and sending the message to the dialogflow
     elif event_data['type'] == 'MESSAGE':
-        resp = create_card_response(event_data['message']['text'])
+        resp = send_message_to_dialogflow(event_data['message']['text'])
+        #resp = create_card_response(event_data['message']['text'])
 
     elif event_data['type'] == 'CARD_CLICKED':
         action_name = event_data['action']['actionMethodName']
@@ -106,6 +110,34 @@ def send_async_response(response, space_name, thread_id):
     chat.spaces().messages().create(
         parent=space_name,
         body=response).execute()
+
+# Todo - in here, we will start to connect with the dialogflow
+  # we have the message
+def send_message_to_dialogflow(event_message):
+
+    message = event_message
+    project_id = 'proj-chatbot-og'
+
+    response_from_dialogflow = dialog_config.detect_intent_texts(project_id, "unique", message, 'en')
+
+    response = dict()
+    cards = list()
+    widgets = list()
+    header = None
+
+    widgets.append({
+        'textParagraph': {
+            'text': response_from_dialogflow
+        }
+    })
+
+    if header != None:
+        cards.append(header)
+
+    cards.append({ 'sections': [{ 'widgets': widgets }]})
+    response['cards'] = cards
+
+    return response
 
 def create_card_response(event_message):
     """Creates a card response based on the message sent in Hangouts Chat.
