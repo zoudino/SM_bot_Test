@@ -19,6 +19,7 @@ from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
 from connect_dialogflow import dialog_config
 import dialogflow
+import os
 
 
 app = Flask(__name__)
